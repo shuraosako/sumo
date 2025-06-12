@@ -1,10 +1,10 @@
 <configuration>
-<input>
-<net-file value="3gousen_new.net.xml"/>
-
-</input>
-<time>
-<begin value="0"/>
-<end value="1000"/>
-</time>
+    <input>
+        <net-file value="3gousen_new.net.xml"/>
+        <route-files value="routes.rou.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="1000"/>
+    </time>
 </configuration>
