@@ -2,6 +2,7 @@
     <input>
         <net-file value="3gousen_new.net.xml"/>
         <route-files value="routes.rou.xml"/>
+        <additional-files value="3gousen_colored.poly.xml"/>
     </input>
     <time>
         <begin value="0"/>

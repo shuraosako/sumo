@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SUMO Polygon Type Map for Coloring -->
+<polygonTypes>
+    <!-- 水関連 -->
+    <polygonType id="waterway" name="water" color="0.71,0.82,0.82" layer="-4"/>
+    <polygonType id="natural" name="natural" color="0.55,0.77,0.42" layer="-4"/>
+    <polygonType id="natural.water" name="water" color="0.71,0.82,0.82" layer="-4"/>
+    <polygonType id="natural.wetland" name="wetland" color="0.71,0.82,0.82" layer="-4"/>
+    <polygonType id="natural.wood" name="forest" color="0.55,0.77,0.42" layer="-4"/>
+    <polygonType id="natural.land" name="land" color="0.98,0.87,0.46" layer="-4"/>
+    
+    <!-- 土地利用 -->
+    <polygonType id="landuse" name="landuse" color="0.76,0.76,0.51" layer="-3"/>
+    <polygonType id="landuse.forest" name="forest" color="0.55,0.77,0.42" layer="-3"/>
+    <polygonType id="landuse.park" name="park" color="0.81,0.96,0.79" layer="-3"/>
+    <polygonType id="landuse.residential" name="residential" color="0.92,0.92,0.89" layer="-3"/>
+    <polygonType id="landuse.commercial" name="commercial" color="0.97,0.85,0.85" layer="-3"/>
+    <polygonType id="landuse.industrial" name="industrial" color="0.90,0.85,0.97" layer="-3"/>
+    <polygonType id="landuse.retail" name="retail" color="0.99,0.61,0.61" layer="-3"/>
+    <polygonType id="landuse.farmland" name="farmland" color="0.98,0.98,0.74" layer="-3"/>
+    <polygonType id="landuse.meadow" name="meadow" color="0.80,0.96,0.80" layer="-3"/>
+    
+    <!-- 建物 -->
+    <polygonType id="building" name="building" color="0.84,0.84,0.84" layer="-2"/>
+    <polygonType id="building.residential" name="house" color="0.85,0.85,0.85" layer="-2"/>
+    <polygonType id="building.commercial" name="shop" color="0.90,0.80,0.80" layer="-2"/>
+    <polygonType id="building.industrial" name="factory" color="0.80,0.75,0.85" layer="-2"/>
+    
+    <!-- 道路・交通 -->
+    <polygonType id="highway" name="highway" color="0.40,0.40,0.40" layer="-1"/>
+    <polygonType id="railway" name="railway" color="0.60,0.60,0.60" layer="-1"/>
+    <polygonType id="aeroway" name="aeroway" color="0.70,0.70,0.70" layer="-1"/>
+    
+    <!-- アメニティ -->
+    <polygonType id="amenity" name="amenity" color="0.93,0.78,0.78" layer="0"/>
+    <polygonType id="amenity.parking" name="parking" color="0.92,0.92,0.80" layer="0"/>
+    <polygonType id="amenity.school" name="school" color="0.85,0.95,0.85" layer="0"/>
+    <polygonType id="amenity.hospital" name="hospital" color="0.95,0.85,0.85" layer="0"/>
+    
+    <!-- レジャー -->
+    <polygonType id="leisure" name="leisure" color="0.81,0.96,0.79" layer="-1"/>
+    <polygonType id="leisure.park" name="park" color="0.81,0.96,0.79" layer="-1"/>
+    <polygonType id="leisure.sports_centre" name="sports" color="0.75,0.90,0.75" layer="-1"/>
+    <polygonType id="leisure.playground" name="playground" color="0.85,0.95,0.85" layer="-1"/>
+    
+    <!-- ショップ -->
+    <polygonType id="shop" name="shop" color="0.90,0.75,0.75" layer="0"/>
+    
+    <!-- 観光 -->
+    <polygonType id="tourism" name="tourism" color="0.99,0.75,0.80" layer="0"/>
+    
+    <!-- その他 -->
+    <polygonType id="barrier" name="barrier" color="0.60,0.60,0.60" layer="1"/>
+    <polygonType id="power" name="power" color="0.70,0.70,0.70" layer="1"/>
+</polygonTypes>
