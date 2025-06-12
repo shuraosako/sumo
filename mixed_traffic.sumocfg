@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <input>
+        <net-file value="3gousen_new.net.xml"/>
+        <route-files value="vehicle_types.xml,mixed_routes.rou.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="600"/>
+    </time>
+    <processing>
+        <collision.check-junctions value="true"/>
+    </processing>
+    <report>
+        <verbose value="true"/>
+    </report>
+</configuration>
