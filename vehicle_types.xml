@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <routes>
-    <!-- ガソリン車（一般車両） -->
+    <!-- ガソリン車（一般車両）- 論文の「グリーンウェーブに従わない車両」 -->
     <vType id="gasoline_car" 
            accel="2.6" 
            decel="4.5" 
@@ -10,7 +10,7 @@
            color="1,0,0"
            emissionClass="HBEFA3/PC_G_EU4"/>
     
-    <!-- AV車（自動運転車） -->
+    <!-- AV車（自動運転車）- 論文の「グリーンウェーブに従う車両」 -->
     <vType id="autonomous_car" 
            accel="2.0" 
            decel="3.0" 
