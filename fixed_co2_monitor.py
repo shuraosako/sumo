@@ -1,22 +1,10 @@
-
 """
-CO2排出量測定スクリプト
-ガソリン車のCO2排出量をリアルタイムで測定・記録
+修正版CO2排出量測定スクリプト
+data/log/フォルダに結果を保存
 
-■ 論文の式(5)との対応:
-論文: E = 0.3Kc(T/2 + d) + 0.028KcL + 0.056Kc[m·u² + (1-m-a/N)·(u²-vG²)]
-      ↓【理論→実装の変換】
-実装: SUMOのgetCO2Emission()による物理ベースCO2排出量測定
-
-■ 変換の詳細:
-- 論文の理論計算式 → SUMOの統合排出量モデル（HBEFA3準拠）
-- 論文の時間項・距離項・速度項 → TraCIによる実時間物理計算
-- 論文のKc換算係数 → SUMOの排出クラス設定による自動計算
-- 論文のAV効果予測 → 実際のAV vs ガソリン車排出量比較
-
-■ 理論的妥当性:
-SUMOの物理ベース計算は論文の式(5)の各項目を統合的に考慮し、
-より現実的なCO2排出量を算出。論文の理論予測を実測で検証。
+修正点：
+1. 結果保存先をdata/log/に変更
+2. フォルダの自動作成機能追加
 """
 
 import os
@@ -29,65 +17,48 @@ import signal
 
 class CO2EmissionMonitor:
     """
-    CO2排出量監視クラス
-    
-    【論文の式(5)との詳細対応】
-    
-    ■ 論文の理論モデル:
-    E = 0.3Kc(T/2 + d) + 0.028KcL + 0.056Kc[m·u² + (1-m-a/N)·(u²-vG²)]
-    
-    各項目の物理的意味:
-    - 第1項 0.3Kc(T/2 + d): 時間に比例するCO2排出（アイドリング等）
-    - 第2項 0.028KcL: 距離に比例するCO2排出（基本走行）
-    - 第3項 0.056Kc[...]: 加速・減速に伴うCO2排出増加
-    
-    ■ SUMOでの実装:
-    traci.vehicle.getCO2Emission(vid): 上記3項目を統合した物理計算
-    - HBEFA3排出モデルに基づく実時間計算
-    - 車両の瞬間速度・加速度・負荷を考慮
-    - 論文の理論式より詳細で現実的な排出量算出
-    
-    ■ 検証の意義:
-    論文の理論予測と物理シミュレーション結果を比較し、
-    AV導入による実際のCO2削減効果を定量評価
+    CO2排出量監視クラス（修正版）
     """
     
     def __init__(self):
         """
-        初期化
-        
-        【論文対応】測定パラメータの設定
-        - 論文の式(5)で予測される効果を実測で検証するためのデータ構造
+        初期化（修正版）
         """
-        # 車両分類管理（論文の車両タイプ対応）
-        self.vehicle_types = {}  # 車両ID -> タイプ（論文のAV vs 一般車分類）
+        # 結果保存フォルダの設定
+        self.log_dir = os.path.join("data", "log")
+        self.ensure_log_directory()
         
-        # CO2排出量データ（論文の式(5)左辺Eに対応）
-        self.co2_emissions = defaultdict(float)  # 車両タイプ別CO2排出量
-        self.vehicle_distances = defaultdict(float)  # 車両タイプ別走行距離
+        # 車両分類管理
+        self.vehicle_types = {}
         
-        # 総排出量（論文の評価指標）
-        self.total_co2 = 0.0      # 全体総排出量
-        self.gasoline_co2 = 0.0   # ガソリン車排出量（論文の削減対象）
-        self.av_co2 = 0.0         # AV車排出量（論文では理論的にゼロ）
+        # CO2排出量データ
+        self.co2_emissions = defaultdict(float)
+        self.vehicle_distances = defaultdict(float)
+        
+        # 総排出量
+        self.total_co2 = 0.0
+        self.gasoline_co2 = 0.0
+        self.av_co2 = 0.0
         
         # シミュレーション管理
         self.step_count = 0
         self.start_time = time.time()
         
-        # 結果保存用（論文検証データ）
+        # 結果保存用
         self.emission_log = []
+        
+    def ensure_log_directory(self):
+        """ログディレクトリが存在することを確認（なければ作成）"""
+        try:
+            os.makedirs(self.log_dir, exist_ok=True)
+            print(f"📁 ログディレクトリ確認: {self.log_dir}")
+        except Exception as e:
+            print(f"⚠️ ログディレクトリ作成エラー: {e}")
+            self.log_dir = "."  # フォールバック：カレントディレクトリ
         
     def initialize_vehicles(self):
         """
         現在の車両の型を記録
-        
-        【論文対応】車両分類の初期化
-        論文の「AV車 vs 一般車両」分類をSUMOの車両タイプから判定
-        
-        車両タイプの対応:
-        - 'autonomous_car': 論文のAV車（CO2排出ゼロ設定）
-        - 'gasoline_car': 論文の一般車両（CO2排出あり）
         """
         vehicle_ids = traci.vehicle.getIDList()
         for vid in vehicle_ids:
@@ -100,29 +71,10 @@ class CO2EmissionMonitor:
     def update_emissions(self):
         """
         排出量を更新
-        
-        【重要】論文の式(5)の実装部分
-        
-        ■ 論文の理論計算:
-        E = 0.3Kc(T/2 + d) + 0.028KcL + 0.056Kc[m·u² + (1-m-a/N)·(u²-vG²)]
-        
-        ■ SUMOの物理計算:
-        CO2 = traci.vehicle.getCO2Emission(vid)  # mg/s
-        
-        ■ 計算方式の比較:
-        - 論文: 理論的な3項目式による解析的計算
-        - SUMO: HBEFA3モデルによる実時間物理計算
-          * 瞬間速度・加速度・エンジン負荷を統合考慮
-          * 論文の理論より詳細で現実的
-        
-        ■ 時間軸処理:
-        論文の連続時間積分 → SUMOの離散時間ステップ累積
-        ∫[0 to T] E(t) dt ≈ Σ[t=0 to T] E(t) × Δt
         """
         current_vehicles = set(traci.vehicle.getIDList())
         
-        # 新しい車両を登録（動的車両生成への対応）
-        # 【論文対応】車群の動的変化に対する頑健性確保
+        # 新しい車両を登録
         for vid in current_vehicles:
             if vid not in self.vehicle_types:
                 try:
@@ -132,48 +84,43 @@ class CO2EmissionMonitor:
                     continue
         
         # 各車両の排出量を取得
-        # 【論文の式(5)実装】ここで実際のCO2排出量を測定
-        step_gasoline_co2 = 0.0  # このステップでのガソリン車排出量
-        step_av_co2 = 0.0        # このステップでのAV車排出量
+        step_gasoline_co2 = 0.0
+        step_av_co2 = 0.0
         
         for vid in current_vehicles:
             if vid in self.vehicle_types:
                 try:
                     # SUMOによるCO2排出量取得 (mg/s)
-                    # 【重要】これが論文の式(5)の物理実装版
                     co2_emission = traci.vehicle.getCO2Emission(vid)  # mg/s
                     distance = traci.vehicle.getSpeed(vid)  # m/s
                     vtype = self.vehicle_types[vid]
                     
-                    # タイプ別に集計（論文の車両分類別効果測定）
+                    # タイプ別に集計
                     self.co2_emissions[vtype] += co2_emission / 1000.0  # mg -> g
                     self.vehicle_distances[vtype] += distance  # m/s -> m (1秒あたり)
                     
-                    # 論文の車両分類別集計
+                    # 車両分類別集計
                     if vtype == 'gasoline_car':
-                        # 【論文対応】一般車両のCO2排出（削減対象）
                         step_gasoline_co2 += co2_emission / 1000.0
                     elif vtype == 'autonomous_car':
-                        # 【論文対応】AV車のCO2排出（理論的にはゼロ）
                         step_av_co2 += co2_emission / 1000.0
                         
                 except:
                     continue
         
-        # 累積排出量更新（論文の式(5)の時間積分実装）
+        # 累積排出量更新
         self.gasoline_co2 += step_gasoline_co2
         self.av_co2 += step_av_co2
         self.total_co2 = self.gasoline_co2 + self.av_co2
         
-        # ログに記録（論文検証用データ）
-        # 【論文対応】時系列データによる効果分析
+        # ログに記録
         current_time = traci.simulation.getTime()
         self.emission_log.append({
             'time': current_time,
-            'gasoline_co2': step_gasoline_co2,     # ステップ排出量
-            'av_co2': step_av_co2,                 # ステップ排出量
-            'total_gasoline': self.gasoline_co2,   # 累積排出量
-            'total_av': self.av_co2,               # 累積排出量
+            'gasoline_co2': step_gasoline_co2,
+            'av_co2': step_av_co2,
+            'total_gasoline': self.gasoline_co2,
+            'total_av': self.av_co2,
             'gasoline_vehicles': len([v for v, t in self.vehicle_types.items() 
                                     if t == 'gasoline_car' and v in current_vehicles]),
             'av_vehicles': len([v for v, t in self.vehicle_types.items() 
@@ -183,14 +130,11 @@ class CO2EmissionMonitor:
     def print_status(self):
         """
         現在の状況を表示
-        
-        【論文対応】リアルタイム効果監視
-        論文の理論予測と実測値の比較を可視化
         """
         current_time = traci.simulation.getTime()
         current_vehicles = traci.vehicle.getIDList()
         
-        # 車両数カウント（論文の車両分類）
+        # 車両数カウント
         gasoline_count = len([v for v, t in self.vehicle_types.items() 
                             if t == 'gasoline_car' and v in current_vehicles])
         av_count = len([v for v, t in self.vehicle_types.items() 
@@ -203,23 +147,23 @@ class CO2EmissionMonitor:
     
     def save_results(self):
         """
-        結果をファイルに保存
-        
-        【論文検証レポート】
-        論文の式(5)予測と実測結果の比較分析
+        結果をファイルに保存（修正版）
         """
         # 詳細ログをCSVで保存
-        # 【論文対応】時系列分析用データ
-        with open('co2_emission_log.csv', 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=[
-                'time', 'gasoline_co2', 'av_co2', 'total_gasoline', 
-                'total_av', 'gasoline_vehicles', 'av_vehicles'
-            ])
-            writer.writeheader()
-            writer.writerows(self.emission_log)
+        csv_path = os.path.join(self.log_dir, 'co2_emission_log.csv')
+        try:
+            with open(csv_path, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=[
+                    'time', 'gasoline_co2', 'av_co2', 'total_gasoline', 
+                    'total_av', 'gasoline_vehicles', 'av_vehicles'
+                ])
+                writer.writeheader()
+                writer.writerows(self.emission_log)
+            print(f"📊 CO2時系列データを{csv_path}に保存")
+        except Exception as e:
+            print(f"⚠️ CSV保存エラー: {e}")
         
         # サマリーレポート
-        # 【論文対応】理論検証結果レポート
         report = f"""
 ============================================================
 CO2排出量測定結果レポート
@@ -247,7 +191,7 @@ CO2排出量測定結果レポート
             gasoline_co2_per_km = self.gasoline_co2 / gasoline_km if gasoline_km > 0 else 0
             report += f"\n💨 ガソリン車CO2排出率: {gasoline_co2_per_km:.2f} g/km\n"
         
-        # AV普及率の計算（論文の式(4)パラメータp）
+        # AV普及率の計算
         if self.emission_log:
             latest_log = self.emission_log[-1]
             total_vehicles = latest_log['gasoline_vehicles'] + latest_log['av_vehicles']
@@ -259,7 +203,7 @@ CO2排出量測定結果レポート
             
             # 理論的CO2削減効果の推定
             if av_penetration_rate > 0:
-                estimated_reduction = min(av_penetration_rate * 20, 20)  # 最大20%削減（論文予測）
+                estimated_reduction = min(av_penetration_rate * 20, 20)  # 最大20%削減
                 report += f"\n   【論文予測】期待CO2削減率: 約{estimated_reduction:.1f}%"
         
         report += f"""
@@ -267,6 +211,7 @@ CO2排出量測定結果レポート
 ⏱️  シミュレーション時間: {self.step_count} ステップ
 🕐 実行時間: {time.time() - self.start_time:.1f} 秒
 ============================================================
+保存先: {self.log_dir}
 詳細ログ: co2_emission_log.csv に保存済み
 ============================================================
 """
@@ -274,14 +219,17 @@ CO2排出量測定結果レポート
         print(report)
         
         # レポートをファイルに保存
-        with open('co2_emission_report.txt', 'w', encoding='utf-8') as f:
-            f.write(report)
+        report_path = os.path.join(self.log_dir, 'co2_emission_report.txt')
+        try:
+            with open(report_path, 'w', encoding='utf-8') as f:
+                f.write(report)
+            print(f"💾 CO2レポートを{report_path}に保存")
+        except Exception as e:
+            print(f"⚠️ レポート保存エラー: {e}")
 
 def signal_handler(sig, frame):
     """
     Ctrl+Cでの終了処理
-    
-    【論文対応】実験中断時の適切なデータ保存
     """
     print("\n\n⚠️  シミュレーション中断中...")
     try:
@@ -293,10 +241,7 @@ def signal_handler(sig, frame):
 
 def main():
     """
-    メイン実行関数
-    
-    【論文対応】CO2排出量シミュレーション実行
-    論文の式(5)で予測される環境負荷削減効果を実測で検証
+    メイン実行関数（修正版）
     """
     # SUMO接続
     sumo_cmd = ["sumo", "-c", "mixed_traffic.sumocfg", "--start"]
@@ -316,16 +261,15 @@ def main():
         traci.start(sumo_cmd)
         monitor = CO2EmissionMonitor()
         
-        # 初期車両を登録（論文の車両分類設定）
+        # 初期車両を登録
         monitor.initialize_vehicles()
         
         # シミュレーションループ
-        # 【論文対応】連続時間の離散化実装
         while traci.simulation.getMinExpectedNumber() > 0:
             traci.simulationStep()
             monitor.step_count += 1
             
-            # 排出量更新（論文の式(5)実装）
+            # 排出量更新
             monitor.update_emissions()
             
             # 10ステップごとに表示更新
