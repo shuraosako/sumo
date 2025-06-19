@@ -6,7 +6,7 @@
     </input>
     <time>
         <begin value="0"/>
-        <end value="600"/>
+        <end value="1000"/>
     </time>
     <processing>
         <collision.check-junctions value="true"/>

@@ -47,7 +47,7 @@ def create_vehicle_types_file():
     1. AV車の特性 (autonomous_car):
        - sigma=0.0: 論文の「完全制御」を表現
          * 論文: AVは正確にグリーンウェーブ速度vGで走行
-         * 実装: 運転ばらつきゼロで理想的な制御を実現
+         * 実装: 
        
        - emissionClass="zero": 論文の環境効果分析用
          * 論文の式(5): AV車はCO2排出量削減に寄与
@@ -65,10 +65,6 @@ def create_vehicle_types_file():
          * 実装: 欧州排出基準に基づく排出量モデル
        
        - color="1,0,0": 赤色表示でガソリン車を視覚的に識別
-    
-    ■ 論文の式(4)への寄与:
-    この車両特性設定により、AV車が車群のペースメーカーとして
-    機能し、停止回数削減効果を実現する基盤を提供
     """
     vehicle_types_content = '''<?xml version="1.0" encoding="UTF-8"?>
 <routes>
@@ -98,12 +94,7 @@ def create_vehicle_types_file():
     print("✅ vehicle_types.xml を作成しました")
 
 def check_sumo_environment():
-    """
-    SUMO環境をチェック
-    
-    【論文対応】シミュレーション環境の整合性確保
-    論文の理論検証には適切なシミュレーション環境が必要
-    """
+    #SUMO環境をチェック
     sumo_home = os.environ.get('SUMO_HOME')
     if not sumo_home:
         print("⚠️  SUMO_HOME環境変数が設定されていません")
@@ -144,7 +135,6 @@ def create_manual_trips(network_file, total_vehicles, end_time, output_file):
         root = tree.getroot()
         
         # 利用可能なエッジを取得
-        # 【論文対応】論文の「リンク」概念に相当
         edges = []
         for edge in root.findall('edge'):
             edge_id = edge.get('id')
@@ -157,7 +147,6 @@ def create_manual_trips(network_file, total_vehicles, end_time, output_file):
             return False
         
         # 手動トリップファイル作成
-        # 【論文対応】車両の時空間分布を制御
         trips_content = '<?xml version="1.0" encoding="UTF-8"?>\n<trips>\n'
         
         for i in range(total_vehicles):
@@ -343,7 +332,7 @@ def create_sumo_config(network_file, route_file, additional_files=None):
     </input>
     <time>
         <begin value="0"/>
-        <end value="600"/>
+        <end value="1000"/>
     </time>
     <processing>
         <collision.check-junctions value="true"/>
@@ -371,8 +360,8 @@ def main():
                        help='総車両数 - 論文の式(4)パラメータN (デフォルト: 100)')
     parser.add_argument('--av-penetration', '-p', type=int, default=50, 
                        help='AV普及率%% - 論文の式(4)パラメータp×100 (デフォルト: 50)')
-    parser.add_argument('--end-time', '-e', type=int, default=600, 
-                       help='シミュレーション時間(秒) (デフォルト: 600)')
+    parser.add_argument('--end-time', '-e', type=int, default=1000, 
+                       help='シミュレーション時間(秒) (デフォルト: 1000)')
     parser.add_argument('--output', '-o', default='mixed_routes.rou.xml', 
                        help='出力ルートファイル名 (デフォルト: mixed_routes.rou.xml)')
     parser.add_argument('--poly-file', default=None, 
