@@ -41,7 +41,7 @@ set /p choice="選択 (1-3): "
 
 if "%choice%"=="1" (
     echo 🖥️  SUMO-GUI を起動中...
-    sumo-gui -c mixed_traffic.sumocfg
+    python traffic_controller.py %total_vehicles% %av_penetration%
 ) else if "%choice%"=="2" (
     echo.
     echo 📊 統合分析を実行中...
