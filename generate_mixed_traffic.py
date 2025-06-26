@@ -1,30 +1,3 @@
-
-"""
-AV車とガソリン車の混合交通生成スクリプト
-AV普及率をパラメータで制御可能
-
-■ 論文理論の実装箇所:
-1. 式(4)のパラメータ設定:
-   - p (AV普及率): --av-penetration引数で制御 (0 ≤ p ≤ 1)
-   - N (車群台数): --vehicles引数で総車両数を設定
-   
-2. 車両分類の実装:
-   - AV車: グリーンウェーブに従う車両 (論文の理論対象)
-   - 一般車両: グリーンウェーブに従わない車両 (論文の比較対象)
-   
-3. 交通流特性の設定:
-   - AV車: sigma=0.0 (完全制御、論文のペースメーカー機能)
-   - 一般車: sigma=0.5 (人間の運転ばらつき)
-   
-4. 環境負荷特性:
-   - AV車: emissionClass="zero" (CO2排出ゼロ)
-   - 一般車: emissionClass="HBEFA3/PC_G_EU4" (CO2排出あり)
-
-■ 理論的意義:
-本スクリプトは論文の式(4)〜(5)で予測される効果を
-実際のシミュレーション環境で検証するための基盤を構築
-"""
-
 import os
 import sys
 import subprocess
@@ -33,39 +6,6 @@ import random
 import argparse
 
 def create_vehicle_types_file():
-    """
-    車両タイプ定義ファイルを作成
-    
-    【論文対応】車両分類の物理的実装
-    
-    ■ 論文の車両分類理論:
-    - AV (Autonomous Vehicle): グリーンウェーブ制御に従う車両
-    - 一般車両: グリーンウェーブ制御に従わない車両
-    
-    ■ 実装での車両特性設定:
-    
-    1. AV車の特性 (autonomous_car):
-       - sigma=0.0: 論文の「完全制御」を表現
-         * 論文: AVは正確にグリーンウェーブ速度vGで走行
-         * 実装: 
-       
-       - emissionClass="zero": 論文の環境効果分析用
-         * 論文の式(5): AV車はCO2排出量削減に寄与
-         * 実装: 排出ガスゼロで環境負荷なし
-       
-       - color="0,1,0": 緑色表示でAV車を視覚的に識別
-    
-    2. ガソリン車の特性 (gasoline_car):
-       - sigma=0.5: 論文の「人間運転者のばらつき」を表現
-         * 論文: 一般車両は系統速度uで走行（ばらつきあり）
-         * 実装: 標準的な人間運転者の行動モデル
-       
-       - emissionClass="HBEFA3/PC_G_EU4": 実際のCO2排出
-         * 論文の式(5): CO2排出量計算の対象車両
-         * 実装: 欧州排出基準に基づく排出量モデル
-       
-       - color="1,0,0": 赤色表示でガソリン車を視覚的に識別
-    """
     vehicle_types_content = '''<?xml version="1.0" encoding="UTF-8"?>
 <routes>
     <!-- ガソリン車（一般車両）- 論文の「グリーンウェーブに従わない車両」 -->
@@ -114,20 +54,6 @@ def check_sumo_environment():
     return True
 
 def create_manual_trips(network_file, total_vehicles, end_time, output_file):
-    """
-    手動でシンプルなトリップファイルを作成
-    randomTrips.pyが使用できない場合の代替手段
-    
-    【論文対応】交通需要の生成
-    論文では「完全に飽和している状況」を前提とするが、
-    実装では現実的な交通需要パターンを生成
-    
-    Args:
-        network_file: ネットワークファイル
-        total_vehicles: 総車両数（論文の式(4)におけるN×サイクル数）
-        end_time: シミュレーション時間
-        output_file: 出力ファイル名
-    """
     try:
         # ネットワークファイルからエッジ情報を読み取り
         import xml.etree.ElementTree as ET
@@ -171,31 +97,6 @@ def create_manual_trips(network_file, total_vehicles, end_time, output_file):
         return False
 
 def generate_mixed_routes(network_file, total_vehicles, av_penetration, end_time, output_file):
-    """
-    混合交通のルートファイルを生成
-    
-    【重要】論文の式(4)パラメータの物理的実装
-    
-    ■ 論文の式(4)との対応:
-    m = Σ(k=1 to N-a) (k-1)/N (1-p)^(k-1) p + (N-a)/N (1-p)^(N-a)
-    
-    実装でのパラメータ設定:
-    - p (AV普及率): av_penetration / 100 で実装
-    - N (車群台数): total_vehicles で近似
-    - 車両配置: ランダム配置により確率的効果を実現
-    
-    ■ 理論的背景:
-    論文では「車群内でのAV位置により停止回数が決まる」と予測。
-    本実装では、実際の車両配置をランダムに決定し、
-    長時間シミュレーションで理論的期待値に収束させる。
-    
-    Args:
-        network_file: ネットワークファイル名
-        total_vehicles: 総車両数（論文のN相当）
-        av_penetration: AV普及率 0-100（論文のp×100）
-        end_time: シミュレーション終了時間
-        output_file: 出力ファイル名
-    """
     
     # AV車とガソリン車の台数計算
     # 【論文の式(4)パラメータ計算】
@@ -308,17 +209,6 @@ def generate_mixed_routes(network_file, total_vehicles, av_penetration, end_time
         return False
 
 def create_sumo_config(network_file, route_file, additional_files=None):
-    """
-    SUMO設定ファイルを作成
-    
-    【論文対応】シミュレーション環境の構築
-    論文の理論検証に必要な設定パラメータを適用
-    
-    Args:
-        network_file: ネットワークファイル（論文の「道路リンク」）
-        route_file: ルートファイル（論文の「車群」データ）
-        additional_files: 追加設定ファイル
-    """
     config_content = f'''<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <input>
@@ -347,12 +237,6 @@ def create_sumo_config(network_file, route_file, additional_files=None):
     print("✅ mixed_traffic.sumocfg を作成しました")
 
 def main():
-    """
-    メイン実行関数
-    
-    【論文対応】混合交通シミュレーション環境の構築
-    論文の理論検証に必要な全ての設定を統合的に実行
-    """
     parser = argparse.ArgumentParser(description='AV車とガソリン車の混合交通生成')
     parser.add_argument('--network', '-n', default='3gousen_new.net.xml', 
                        help='ネットワークファイル名 (デフォルト: 3gousen_new.net.xml)')

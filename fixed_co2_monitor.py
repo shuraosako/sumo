@@ -1,12 +1,3 @@
-"""
-修正版CO2排出量測定スクリプト
-data/log/フォルダに結果を保存
-
-修正点：
-1. 結果保存先をdata/log/に変更
-2. フォルダの自動作成機能追加
-"""
-
 import os
 import sys
 import traci
