@@ -90,12 +90,11 @@ def add_vehicle(veh_id, is_av, edge_ids):
                 departPos="random"
             )
             print(f"✅ 車両追加: {veh_id}, from={from_edge}, to={to_edge}, type={veh_type}")
-            return True  # 成功したので終了
+            return True
 
     print(f"⚠️ 車両追加失敗: {veh_id} から有効なルートが見つかりませんでした")
     return False
 
-# === メイン実行 ===
 def main():
     # 終了時間の決定（優先順位: 引数 > sumocfg > デフォルト）
     if len(sys.argv) <= 3:
@@ -143,7 +142,7 @@ def main():
             # 車両補充ロジック（終了時刻近くでは追加停止）
             if current_sim_time < END_TIME - 60:  # 終了60秒前まで車両追加
                 if num_current < TOTAL_VEHICLES:
-                    shortage = min(TOTAL_VEHICLES - num_current, 5)  # 一度に最大5台まで
+                    shortage = min(TOTAL_VEHICLES - num_current, 5)
                     success_count = 0
                     
                     for _ in range(shortage):
