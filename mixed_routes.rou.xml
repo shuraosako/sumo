@@ -2,15 +2,15 @@
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
     <trip id="0" depart="0.00" from="173941139#1" to="-155875802#0" type="gasoline_car" />
     <trip id="1" depart="1.00" from="-174032652#0" to="-173941896#0" type="gasoline_car" />
-    <trip id="2" depart="2.00" from="173942126#0" to="173941546#0" type="autonomous_car" />
-    <trip id="3" depart="3.00" from="496906169#1" to="-170841497#4" type="gasoline_car" />
+    <trip id="2" depart="2.00" from="173942126#0" to="173941546#0" type="gasoline_car" />
+    <trip id="3" depart="3.00" from="496906169#1" to="-170841497#4" type="autonomous_car" />
     <trip id="4" depart="4.00" from="-557161306#0" to="-155875802#1" type="gasoline_car" />
     <trip id="5" depart="5.00" from="-173941867" to="155875852#0" type="gasoline_car" />
-    <trip id="6" depart="6.00" from="-155875802#0" to="-173941546#0" type="autonomous_car" />
+    <trip id="6" depart="6.00" from="-155875802#0" to="-173941546#0" type="gasoline_car" />
     <trip id="7" depart="7.00" from="173941234#0" to="155884542#1" type="gasoline_car" />
-    <trip id="8" depart="8.00" from="-173941888" to="170844796#4" type="gasoline_car" />
+    <trip id="8" depart="8.00" from="-173941888" to="170844796#4" type="autonomous_car" />
     <trip id="9" depart="9.00" from="175562938#0" to="-155875663#2" type="gasoline_car" />
-    <trip id="10" depart="10.00" from="-226166368" to="-173941109#3" type="gasoline_car" />
+    <trip id="10" depart="10.00" from="-226166368" to="-173941109#3" type="autonomous_car" />
     <trip id="11" depart="11.00" from="557162416" to="-222319957#1" type="gasoline_car" />
     <trip id="12" depart="12.00" from="-170841497#6" to="-170841497#8" type="gasoline_car" />
     <trip id="13" depart="13.00" from="155884531#2" to="67792293#1" type="gasoline_car" />
@@ -21,10 +21,10 @@
     <trip id="18" depart="18.00" from="-173941896#1" to="-174032654#1" type="gasoline_car" />
     <trip id="19" depart="19.00" from="-170841497#2" to="-173941985#0" type="gasoline_car" />
     <trip id="20" depart="20.00" from="-170841497#9" to="-174032652#1" type="gasoline_car" />
-    <trip id="21" depart="21.00" from="173941139#0" to="-496906168#0" type="gasoline_car" />
-    <trip id="22" depart="22.00" from="-496906168#2" to="-173941788#2" type="autonomous_car" />
+    <trip id="21" depart="21.00" from="173941139#0" to="-496906168#0" type="autonomous_car" />
+    <trip id="22" depart="22.00" from="-496906168#2" to="-173941788#2" type="gasoline_car" />
     <trip id="23" depart="23.00" from="-173942329#0" to="557160752#6" type="gasoline_car" />
-    <trip id="24" depart="24.00" from="173941152#1" to="173941019#1" type="autonomous_car" />
+    <trip id="24" depart="24.00" from="173941152#1" to="173941019#1" type="gasoline_car" />
     <trip id="25" depart="25.00" from="-173941234#1" to="173942069" type="gasoline_car" />
     <trip id="26" depart="26.00" from="-173941139#2" to="-557160705" type="gasoline_car" />
     <trip id="27" depart="27.00" from="67792308" to="173941139#1" type="gasoline_car" />
@@ -37,8 +37,8 @@
     <trip id="34" depart="34.00" from="173941241" to="-557160722#2" type="gasoline_car" />
     <trip id="35" depart="35.00" from="557160722#2" to="-67792293#1" type="gasoline_car" />
     <trip id="36" depart="36.00" from="-173942253" to="-173942067#3" type="gasoline_car" />
-    <trip id="37" depart="37.00" from="170841497#4" to="-173942131" type="autonomous_car" />
-    <trip id="38" depart="38.00" from="170844796#2" to="557160705" type="gasoline_car" />
+    <trip id="37" depart="37.00" from="170841497#4" to="-173942131" type="gasoline_car" />
+    <trip id="38" depart="38.00" from="170844796#2" to="557160705" type="autonomous_car" />
     <trip id="39" depart="39.00" from="-557160738" to="-173941867" type="gasoline_car" />
     <trip id="40" depart="40.00" from="67792329#1" to="155875886" type="gasoline_car" />
     <trip id="41" depart="41.00" from="-170841497#6" to="-155884463#1" type="gasoline_car" />
