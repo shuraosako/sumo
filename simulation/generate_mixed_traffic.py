@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+AV車とガソリン車の混合交通生成システム
+SUMO用の車両・環境ファイルを自動生成
+"""
+
 import os
 import sys
 import subprocess
@@ -6,9 +13,10 @@ import random
 import argparse
 
 def create_vehicle_types_file():
+    """車両タイプ定義ファイルを作成"""
     vehicle_types_content = '''<?xml version="1.0" encoding="UTF-8"?>
 <routes>
-    <!-- ガソリン車（一般車両）- 論文の「グリーンウェーブに従わない車両」 -->
+    <!-- ガソリン車（一般車両） -->
     <vType id="gasoline_car" 
            accel="2.6" 
            decel="4.5" 
@@ -18,7 +26,7 @@ def create_vehicle_types_file():
            color="1,0,0"
            emissionClass="HBEFA3/PC_G_EU4"/>
     
-    <!-- AV車（自動運転車）- 論文の「グリーンウェーブに従う車両」 -->
+    <!-- AV車（自動運転車） -->
     <vType id="autonomous_car" 
            accel="2.0" 
            decel="3.0" 
@@ -29,12 +37,14 @@ def create_vehicle_types_file():
            emissionClass="zero"/>
 </routes>'''
     
-    with open('vehicle_types.xml', 'w', encoding='utf-8') as f:
+    # config/フォルダに出力（simulation/フォルダから相対パス）
+    output_path = os.path.join('..', 'config', 'vehicle_types.xml')
+    with open(output_path, 'w', encoding='utf-8') as f:
         f.write(vehicle_types_content)
-    print("✅ vehicle_types.xml を作成しました")
+    print(f"✅ {output_path} を作成しました")
 
 def check_sumo_environment():
-    #SUMO環境をチェック
+    """SUMO環境をチェック"""
     sumo_home = os.environ.get('SUMO_HOME')
     if not sumo_home:
         print("⚠️  SUMO_HOME環境変数が設定されていません")
@@ -54,9 +64,9 @@ def check_sumo_environment():
     return True
 
 def create_manual_trips(network_file, total_vehicles, end_time, output_file):
+    """手動でトリップファイルを作成"""
     try:
         # ネットワークファイルからエッジ情報を読み取り
-        import xml.etree.ElementTree as ET
         tree = ET.parse(network_file)
         root = tree.getroot()
         
@@ -79,7 +89,7 @@ def create_manual_trips(network_file, total_vehicles, end_time, output_file):
             # ランダムに出発地と目的地を選択
             from_edge = random.choice(edges)
             to_edge = random.choice([e for e in edges if e != from_edge])
-            # 出発時間の分散（論文の車群到着パターンに対応）
+            # 出発時間の分散
             depart_time = random.uniform(0, end_time * 0.8)  # 80%の時間内にランダム出発
             
             trips_content += f'    <trip id="{i}" depart="{depart_time:.1f}" from="{from_edge}" to="{to_edge}"/>\n'
@@ -97,9 +107,9 @@ def create_manual_trips(network_file, total_vehicles, end_time, output_file):
         return False
 
 def generate_mixed_routes(network_file, total_vehicles, av_penetration, end_time, output_file):
+    """混合交通ルートファイルを生成"""
     
     # AV車とガソリン車の台数計算
-    # 【論文の式(4)パラメータ計算】
     av_count = int(total_vehicles * av_penetration / 100)
     gasoline_count = total_vehicles - av_count
     
@@ -142,7 +152,7 @@ def generate_mixed_routes(network_file, total_vehicles, av_penetration, end_time
         print(f"   標準出力: {e.stdout}")
         print("\n💡 解決方法:")
         print("   1. SUMO_HOME環境変数が正しく設定されているか確認")
-        print("   2. 以下のコマンドで手動実行を試してください:")
+        print(f'   2. 以下のコマンドで手動実行を試してください:')
         print(f'   python "C:\\Program Files (x86)\\Eclipse\\Sumo\\tools\\randomTrips.py" -n {network_file} -e {end_time} -o {temp_trips}')
         return False
     except FileNotFoundError:
@@ -152,7 +162,6 @@ def generate_mixed_routes(network_file, total_vehicles, av_penetration, end_time
         return create_manual_trips(network_file, total_vehicles, end_time, temp_trips)
     
     # XMLファイルを読み込んで車両タイプを割り当て
-    # 【重要】論文の車両分類の実装
     try:
         tree = ET.parse(temp_trips)
         root = tree.getroot()
@@ -166,16 +175,12 @@ def generate_mixed_routes(network_file, total_vehicles, av_penetration, end_time
             gasoline_count = total_vehicles - av_count
         
         # ランダムに車両タイプを割り当て
-        # 【論文対応】確率的な車両配置の実装
-        # 論文の式(4)では「車両kにAVが存在する確率」を扱うが、
-        # 実装では決定的配置を行い、複数回実行で統計的効果を検証
         vehicle_indices = list(range(min(total_vehicles, len(trips))))
         random.shuffle(vehicle_indices)
         
         av_indices = set(vehicle_indices[:av_count])
         
         # 車両タイプを割り当て
-        # 【論文対応】AV車 vs 一般車両の分類実装
         processed_vehicles = 0
         for i, trip in enumerate(trips):
             if processed_vehicles >= total_vehicles:
@@ -185,11 +190,9 @@ def generate_mixed_routes(network_file, total_vehicles, av_penetration, end_time
                 
             if i in av_indices:
                 # AV車を割り当て
-                # 【論文対応】「グリーンウェーブに従う車両」
                 trip.set('type', 'autonomous_car')
             else:
                 # ガソリン車を割り当て
-                # 【論文対応】「グリーンウェーブに従わない車両」
                 trip.set('type', 'gasoline_car')
             
             processed_vehicles += 1
@@ -209,6 +212,7 @@ def generate_mixed_routes(network_file, total_vehicles, av_penetration, end_time
         return False
 
 def create_sumo_config(network_file, route_file, additional_files=None):
+    """SUMO設定ファイルを作成"""
     config_content = f'''<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <input>
@@ -232,22 +236,25 @@ def create_sumo_config(network_file, route_file, additional_files=None):
     </report>
 </configuration>'''
     
-    with open('mixed_traffic.sumocfg', 'w', encoding='utf-8') as f:
+    # config/フォルダに出力（simulation/フォルダから相対パス）
+    output_path = os.path.join('..', 'config', 'mixed_traffic.sumocfg')
+    with open(output_path, 'w', encoding='utf-8') as f:
         f.write(config_content)
-    print("✅ mixed_traffic.sumocfg を作成しました")
+    print(f"✅ {output_path} を作成しました")
 
 def main():
+    """メイン実行関数"""
     parser = argparse.ArgumentParser(description='AV車とガソリン車の混合交通生成')
-    parser.add_argument('--network', '-n', default='3gousen_new.net.xml', 
-                       help='ネットワークファイル名 (デフォルト: 3gousen_new.net.xml)')
+    parser.add_argument('--network', '-n', default=os.path.join('..', 'config', '3gousen_new.net.xml'), 
+                       help='ネットワークファイル名 (デフォルト: ../config/3gousen_new.net.xml)')
     parser.add_argument('--vehicles', '-v', type=int, default=100, 
-                       help='総車両数 - 論文の式(4)パラメータN (デフォルト: 100)')
+                       help='総車両数 (デフォルト: 100)')
     parser.add_argument('--av-penetration', '-p', type=int, default=50, 
-                       help='AV普及率%% - 論文の式(4)パラメータp×100 (デフォルト: 50)')
+                       help='AV普及率%% (デフォルト: 50)')
     parser.add_argument('--end-time', '-e', type=int, default=1000, 
                        help='シミュレーション時間(秒) (デフォルト: 1000)')
-    parser.add_argument('--output', '-o', default='mixed_routes.rou.xml', 
-                       help='出力ルートファイル名 (デフォルト: mixed_routes.rou.xml)')
+    parser.add_argument('--output', '-o', default=os.path.join('..', 'config', 'mixed_routes.rou.xml'), 
+                       help='出力ルートファイル名 (デフォルト: ../config/mixed_routes.rou.xml)')
     parser.add_argument('--poly-file', default=None, 
                        help='ポリゴンファイル名（オプション）')
     
@@ -263,16 +270,23 @@ def main():
         return
     
     print("🚀 混合交通シミュレーション準備開始")
-    print("【論文対応】梅村・和田(2023) 式(4)〜(5)検証環境構築")
     print(f"   ネットワーク: {args.network}")
-    print(f"   総車両数 (N): {args.vehicles}")
-    print(f"   AV普及率 (p): {args.av_penetration}% = {args.av_penetration/100:.2f}")
+    print(f"   総車両数: {args.vehicles}")
+    print(f"   AV普及率: {args.av_penetration}% = {args.av_penetration/100:.2f}")
     print(f"   シミュレーション時間: {args.end_time}秒")
     print()
     
     # SUMO環境チェック
     if not check_sumo_environment():
         print("⚠️  SUMO環境に問題がありますが、手動作成を試行します...")
+    
+    # config/フォルダが存在することを確認
+    config_dir = os.path.join('..', 'config')
+    try:
+        os.makedirs(config_dir, exist_ok=True)
+        print(f"📁 設定フォルダ確認: {config_dir}")
+    except Exception as e:
+        print(f"⚠️ 設定フォルダ作成エラー: {e}")
     
     # 1. 車両タイプファイル作成
     create_vehicle_types_file()
@@ -291,20 +305,25 @@ def main():
         return
     
     # 3. SUMO設定ファイル作成
-    create_sumo_config(args.network, args.output, args.poly_file)
+    create_sumo_config(
+        os.path.basename(args.network),  # config/フォルダ内での相対参照
+        os.path.basename(args.output),   # config/フォルダ内での相対参照
+        args.poly_file
+    )
     
     print()
     print("🎉 準備完了！")
     print("📋 次のコマンドでシミュレーションを実行:")
-    print("   sumo-gui -c mixed_traffic.sumocfg")
+    print("   cd ../monitoring")
+    print("   python integrated_monitor.py --config ../config/mixed_traffic.sumocfg")
     print()
     print("🎨 車両の色分け:")
     print("   🔴 赤色: ガソリン車 (CO2排出あり)")
     print("   🟢 緑色: AV車 (CO2排出なし)")
     print()
-    print("【論文対応】期待される効果:")
-    print("   - 論文の式(4): AV普及率が高いほど停止回数減少")
-    print("   - 論文の式(5): 停止回数減少によりCO2排出量も減少")
+    print("💡 期待される効果:")
+    print("   - AV普及率が高いほど停止回数減少")
+    print("   - 停止回数減少によりCO2排出量も減少")
 
 if __name__ == "__main__":
     main()

@@ -1,11 +1,18 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+統合結果分析・表示システム
+CO2排出量監視と停止回数カウンターの結果を統合分析
+"""
+
 import os
 import re
 import csv
 import sys
 from datetime import datetime
 
-# 結果ファイルの保存先ディレクトリ
-LOG_DIR = os.path.join("data", "log")
+# 結果ファイルの保存先ディレクトリ（analysis/フォルダから相対パス）
+LOG_DIR = os.path.join("..", "data", "log")
 
 def ensure_log_directory():
     """ログディレクトリが存在することを確認"""
@@ -54,7 +61,7 @@ def read_co2_results():
                     co2_data['total_co2'] = float(total_match.group(1))
                 
                 # AV普及率
-                penetration_match = re.search(r'AV普及率 \(p\):\s*([\d.]+)', content)
+                penetration_match = re.search(r'AV普及率:\s*([\d.]+)', content)
                 if penetration_match:
                     co2_data['av_penetration'] = float(penetration_match.group(1))
                 
@@ -91,7 +98,7 @@ def read_stop_results():
         'edge_details': []
     }
     
-    # 停止回数結果の読み取り（修正版対応）
+    # 停止回数結果の読み取り
     stop_files = [
         os.path.join(LOG_DIR, 'stop_count_results.txt'), 
         os.path.join(LOG_DIR, 'stop_count_backup.txt')
@@ -189,9 +196,8 @@ def display_integrated_results():
     print("=" * 70)
     print("           🎯 統合分析結果サマリー")
     print("=" * 70)
-    print("【論文検証】AV普及による交通環境改善効果の定量評価")
-    print("・CO2排出量: 梅村・和田(2023) 式(5)実装検証")
-    print("・停止回数: 梅村・和田(2023) 式(4)実装検証")
+    print("AV普及による交通環境改善効果の定量評価")
+    print("・CO2排出量監視と停止回数カウントの統合分析")
     print("-" * 70)
     
     # データ読み取り

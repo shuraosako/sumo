@@ -1,7 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+動的交通制御システム
+リアルタイムでの車両制御とGUI可視化
+"""
+
 import traci
 import random
 import xml.etree.ElementTree as ET
 import sys
+import os
 
 # 引数チェック（日本語）
 try:
@@ -15,8 +23,9 @@ except (IndexError, ValueError):
     sys.exit(1)
 
 # === パラメータ設定 ===
-NETWORK_FILE = "3gousen_new.net.xml"
-CONFIG_FILE = "mixed_traffic.sumocfg"
+# simulation/フォルダから config/フォルダへの相対パス
+NETWORK_FILE = os.path.join("..", "config", "3gousen_new.net.xml")
+CONFIG_FILE = os.path.join("..", "config", "mixed_traffic.sumocfg")
 
 def get_simulation_end_time():
     """
@@ -36,6 +45,7 @@ def get_simulation_end_time():
 
 # === ネットワークファイルから車両が通行可能なエッジIDを抽出 ===
 def get_valid_edges(net_file):
+    """ネットワークファイルから有効なエッジIDを取得"""
     tree = ET.parse(net_file)
     root = tree.getroot()
     edge_ids = []
@@ -72,6 +82,7 @@ def get_valid_edges(net_file):
 
 # === ランダムに車両を生成・追加 ===
 def add_vehicle(veh_id, is_av, edge_ids):
+    """指定されたタイプの車両をランダムな位置に追加"""
     max_attempts = 10  # 無効ルートを繰り返さないための制限
     veh_type = "autonomous_car" if is_av else "gasoline_car"
 
@@ -97,15 +108,29 @@ def add_vehicle(veh_id, is_av, edge_ids):
 
 # === メイン実行 ===
 def main():
+    """メイン実行関数"""
     # 終了時間の決定（優先順位: 引数 > sumocfg > デフォルト）
     if len(sys.argv) <= 3:
         END_TIME = get_simulation_end_time()
     
-    print(f"🎯 シミュレーション設定:")
+    print(f"🎯 動的交通制御システム開始:")
     print(f"   総車両数: {TOTAL_VEHICLES}")
     print(f"   AV普及率: {AV_PENETRATION*100:.1f}%")
     print(f"   実行時間: {END_TIME} 秒")
     print(f"   設定ファイル: {CONFIG_FILE}")
+    print(f"   ネットワーク: {NETWORK_FILE}")
+    
+    # ファイル存在確認
+    if not os.path.exists(CONFIG_FILE):
+        print(f"❌ 設定ファイルが見つかりません: {CONFIG_FILE}")
+        print("💡 以下のコマンドで設定ファイルを生成してください:")
+        print("   python generate_mixed_traffic.py --vehicles 100 --av-penetration 50")
+        sys.exit(1)
+    
+    if not os.path.exists(NETWORK_FILE):
+        print(f"❌ ネットワークファイルが見つかりません: {NETWORK_FILE}")
+        print("💡 config/フォルダに 3gousen_new.net.xml を配置してください")
+        sys.exit(1)
     
     edge_ids = get_valid_edges(NETWORK_FILE)
     if not edge_ids:
@@ -196,7 +221,12 @@ def main():
             pass
         
         traci.close()
-        print("🎉 シミュレーション正常終了")
+        print("🎉 動的交通制御システム正常終了")
+        print()
+        print("💡 次のステップ:")
+        print("   統合監視システムで分析を実行:")
+        print("   cd ../monitoring")
+        print("   python integrated_monitor.py --config ../config/mixed_traffic.sumocfg")
 
 if __name__ == "__main__":
     main()
