@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-07-17 20:48:13 by Eclipse SUMO netedit Version 1.23.1
+<!-- generated on 2025-07-22 15:40:59 by Eclipse SUMO netedit Version 1.23.1
 <neteditConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/neteditConfiguration.xsd">
 
     <input>
@@ -2890,8 +2890,8 @@
     <edge id=":J11_1" function="internal">
         <lane id=":J11_1_0" index="0" disallow="pedestrian bicycle tram rail_urban rail rail_electric rail_fast ship container cable_car subway aircraft wheelchair scooter drone" speed="16.66" length="0.70" shape="2709.83,3250.61 2709.94,3250.78 2710.01,3250.91 2710.07,3251.03 2710.15,3251.22"/>
     </edge>
-    <edge id=":J12_0" function="internal">
-        <lane id=":J12_0_0" index="0" disallow="pedestrian bicycle tram rail_urban rail rail_electric rail_fast ship container cable_car subway aircraft wheelchair scooter drone" speed="3.65" length="4.67" shape="2768.72,3461.09 2768.50,3462.52 2767.94,3463.21 2767.04,3463.18 2765.82,3462.43"/>
+    <edge id=":J13_0" function="internal">
+        <lane id=":J13_0_0" index="0" disallow="pedestrian bicycle tram rail_urban rail rail_electric rail_fast ship container cable_car subway aircraft wheelchair scooter drone" speed="3.65" length="4.67" shape="2768.72,3461.09 2768.50,3462.52 2767.94,3463.21 2767.04,3463.18 2765.82,3462.43"/>
     </edge>
     <edge id=":J2_0" function="internal">
         <lane id=":J2_0_0" index="0" disallow="pedestrian bicycle tram rail_urban rail rail_electric rail_fast ship container cable_car subway aircraft wheelchair scooter drone" speed="16.66" length="0.30" shape="892.68,408.63 892.41,408.49"/>
@@ -3460,7 +3460,7 @@
         <lane id=":cluster_4885566811_5373796881_15_0" index="0" disallow="tram rail_urban rail rail_electric rail_fast ship container cable_car subway aircraft wheelchair scooter drone" speed="3.65" length="4.67" shape="1065.57,1637.34 1066.52,1636.26 1067.37,1635.97 1068.11,1636.47 1068.74,1637.76"/>
     </edge>
 
-    <edge id="-1" from="J11" to="J12" priority="13" type="highway.trunk" shape="2708.59,3251.64 2717.92,3273.46 2728.64,3306.86 2733.43,3333.91 2738.19,3369.19 2740.93,3388.45 2741.95,3393.27 2752.66,3430.00 2767.27,3461.76">
+    <edge id="-1" from="J11" to="J13" priority="13" type="highway.trunk" shape="2708.59,3251.64 2717.92,3273.46 2728.64,3306.86 2733.43,3333.91 2738.19,3369.19 2740.93,3388.45 2741.95,3393.27 2752.66,3430.00 2767.27,3461.76">
         <lane id="-1_0" index="0" disallow="pedestrian bicycle tram rail_urban rail rail_electric rail_fast ship container cable_car subway aircraft wheelchair scooter drone" speed="16.66" length="219.20" shape="2710.15,3251.22 2719.42,3272.90 2730.20,3306.47 2735.01,3333.66 2739.77,3368.97 2742.51,3388.17 2743.50,3392.88 2754.16,3429.44 2768.72,3461.09"/>
         <param key="ref" value="495"/>
     </edge>
@@ -3971,7 +3971,7 @@
         <lane id="11_0" index="0" disallow="pedestrian bicycle tram rail_urban rail rail_electric rail_fast ship container cable_car subway aircraft wheelchair scooter drone" speed="11.11" length="178.57" shape="2707.10,3252.28 2701.56,3243.21 2690.80,3225.99 2678.83,3208.80 2673.52,3201.58 2659.06,3185.11 2619.92,3143.27 2593.41,3115.32"/>
         <param key="ref" value="495"/>
     </edge>
-    <edge id="12" from="J12" to="J11" priority="13" type="highway.trunk" shape="2767.27,3461.76 2752.66,3430.00 2741.95,3393.27 2740.93,3388.45 2738.19,3369.19 2733.43,3333.91 2728.64,3306.86 2717.92,3273.46 2708.59,3251.64">
+    <edge id="12" from="J13" to="J11" priority="13" type="highway.trunk" shape="2767.27,3461.76 2752.66,3430.00 2741.95,3393.27 2740.93,3388.45 2738.19,3369.19 2733.43,3333.91 2728.64,3306.86 2717.92,3273.46 2708.59,3251.64">
         <lane id="12_0" index="0" disallow="pedestrian bicycle tram rail_urban rail rail_electric rail_fast ship container cable_car subway aircraft wheelchair scooter drone" speed="16.66" length="219.29" shape="2765.82,3462.43 2751.16,3430.56 2740.40,3393.66 2739.35,3388.73 2736.61,3369.41 2731.85,3334.16 2727.08,3307.25 2716.42,3274.02 2707.21,3252.48"/>
         <param key="ref" value="495"/>
     </edge>
@@ -4630,6 +4630,16 @@
         <phase duration="3"  state="Gyyyrr"/>
         <phase duration="42" state="GrrrGG"/>
         <phase duration="3"  state="Grrryy"/>
+    </tlLogic>
+    <tlLogic id="J1" type="static" programID="0" offset="0">
+        <phase duration="81" state="G"/>
+        <phase duration="4"  state="y"/>
+        <phase duration="5"  state="r"/>
+    </tlLogic>
+    <tlLogic id="J13" type="static" programID="0" offset="0">
+        <phase duration="81" state="G"/>
+        <phase duration="4"  state="y"/>
+        <phase duration="5"  state="r"/>
     </tlLogic>
     <tlLogic id="cluster_2579637038_818520857" type="static" programID="0" offset="0">
         <phase duration="33" state="rrrGGGgrrrrGGgGGr"/>
@@ -5671,7 +5681,7 @@
         <request index="7" response="000011000" foes="000011110" cont="0"/>
         <request index="8" response="000010001" foes="000010001" cont="0"/>
     </junction>
-    <junction id="J1" type="priority" x="818.91" y="360.61" incLanes="1_0" intLanes=":J1_0_0" shape="818.91,360.61 816.83,363.04 818.91,360.61">
+    <junction id="J1" type="traffic_light" x="818.91" y="360.61" incLanes="1_0" intLanes=":J1_0_0" shape="818.91,360.61 816.83,363.04 818.91,360.61">
         <request index="0" response="0" foes="0" cont="0"/>
     </junction>
     <junction id="J10" type="traffic_light" x="1815.68" y="2145.62" incLanes="10_0 -4_0" intLanes=":J10_0_0 :J10_1_0" shape="1813.37,2147.84 1818.18,2143.62 1818.02,2143.43 1813.15,2147.59">
@@ -5682,7 +5692,7 @@
         <request index="0" response="00" foes="00" cont="0"/>
         <request index="1" response="00" foes="00" cont="0"/>
     </junction>
-    <junction id="J12" type="priority" x="2767.27" y="3461.76" incLanes="-1_0" intLanes=":J12_0_0" shape="2767.27,3461.76 2770.18,3460.42 2767.27,3461.76">
+    <junction id="J13" type="traffic_light" x="2767.27" y="3461.76" incLanes="-1_0" intLanes=":J13_0_0" shape="2767.27,3461.76 2770.18,3460.42 2767.27,3461.76">
         <request index="0" response="0" foes="0" cont="0"/>
     </junction>
     <junction id="J2" type="traffic_light" x="893.30" y="407.15" incLanes="2_0 -12_0" intLanes=":J2_0_0 :J2_1_0" shape="891.92,410.04 894.95,404.40 894.68,404.26 891.66,409.90">
@@ -6065,7 +6075,7 @@
     <junction id=":cluster_4885566811_5373796881_18_0" type="internal" x="1049.92" y="1627.74" incLanes=":cluster_4885566811_5373796881_10_0 173941788#0_0 :cluster_4885566811_5373796881_2_0" intLanes=":cluster_4885566811_5373796881_16_0 :cluster_4885566811_5373796881_0_0 :cluster_4885566811_5373796881_1_0 :cluster_4885566811_5373796881_2_0 :cluster_4885566811_5373796881_5_0 :cluster_4885566811_5373796881_6_0 :cluster_4885566811_5373796881_13_0 :cluster_4885566811_5373796881_14_0 :cluster_4885566811_5373796881_15_0"/>
     <junction id=":cluster_4885566811_5373796881_19_0" type="internal" x="1043.66" y="1627.20" incLanes=":cluster_4885566811_5373796881_11_0 -557160706_0 173941788#0_0 496906168#2_0" intLanes=":cluster_4885566811_5373796881_1_0 :cluster_4885566811_5373796881_6_0 :cluster_4885566811_5373796881_12_0"/>
 
-    <connection from="-1" to="12" fromLane="0" toLane="0" via=":J12_0_0" dir="t" state="M"/>
+    <connection from="-1" to="12" fromLane="0" toLane="0" via=":J13_0_0" tl="J13" linkIndex="0" dir="t" state="O"/>
     <connection from="-10" to="-170844796#9" fromLane="0" toLane="0" via=":J4_7_0" tl="818520867" linkIndex="7" dir="r" state="o"/>
     <connection from="-10" to="-9" fromLane="0" toLane="0" via=":J4_8_0" tl="818520867" linkIndex="8" dir="s" state="o"/>
     <connection from="-10" to="-173941985#2" fromLane="0" toLane="0" via=":J4_9_0" tl="818520867" linkIndex="9" dir="l" state="o"/>
@@ -6505,7 +6515,7 @@
     <connection from="-992079392#2" to="992079392#2" fromLane="0" toLane="0" via=":9166166230_5_0" dir="t" state="="/>
     <connection from="-E6" to="4" fromLane="0" toLane="0" via=":J5_4_0" tl="J0" linkIndex="4" dir="r" state="o"/>
     <connection from="-E6" to="-8" fromLane="0" toLane="0" via=":J5_5_0" tl="J0" linkIndex="5" dir="l" state="o"/>
-    <connection from="1" to="-12" fromLane="0" toLane="0" via=":J1_0_0" dir="t" state="M"/>
+    <connection from="1" to="-12" fromLane="0" toLane="0" via=":J1_0_0" tl="J1" linkIndex="0" dir="t" state="O"/>
     <connection from="10" to="9" fromLane="0" toLane="0" via=":J10_0_0" tl="818520784" linkIndex="0" dir="s" state="O"/>
     <connection from="11" to="10" fromLane="0" toLane="0" via=":1818759484_0_0" tl="1818759484" linkIndex="0" dir="s" state="O"/>
     <connection from="12" to="11" fromLane="0" toLane="0" via=":J11_0_0" tl="8154759359" linkIndex="0" dir="s" state="O"/>
@@ -7966,7 +7976,7 @@
     <connection from=":J10_1" to="-3" fromLane="0" toLane="0" dir="s" state="M"/>
     <connection from=":J11_0" to="11" fromLane="0" toLane="0" dir="s" state="M"/>
     <connection from=":J11_1" to="-1" fromLane="0" toLane="0" dir="s" state="M"/>
-    <connection from=":J12_0" to="12" fromLane="0" toLane="0" dir="t" state="M"/>
+    <connection from=":J13_0" to="12" fromLane="0" toLane="0" dir="t" state="M"/>
     <connection from=":J2_0" to="1" fromLane="0" toLane="0" dir="s" state="M"/>
     <connection from=":J2_1" to="-11" fromLane="0" toLane="0" dir="s" state="M"/>
     <connection from=":J3_0" to="2" fromLane="0" toLane="0" dir="s" state="M"/>

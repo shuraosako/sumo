@@ -1,6 +1,6 @@
 import traci
 
-def calculate_speed(L, g, P):
+def calculate_speed(L, g, P, d):
     """
     交通信号制御における車両の最適速度を決定する関数
     
