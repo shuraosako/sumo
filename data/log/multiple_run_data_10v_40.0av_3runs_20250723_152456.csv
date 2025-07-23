@@ -1,0 +1,10 @@
+Run,StopCount,GasolineCO2_g,ExecutionTime_s,Status
+1,66,30593.78,4.069210052490234,Success
+2,66,31247.74,3.9286065101623535,Success
+3,64,32011.41,4.406794309616089,Success
+
+Statistics,StopCount,GasolineCO2_g,ExecutionTime_s,
+Mean,65.3,31284.3,4.1,
+StdDev,1.2,709.5,0.2,
+Min,64,30593.8,3.9,
+Max,66,32011.4,4.4,

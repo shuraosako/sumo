@@ -1,2 +1,2 @@
 timestamp,av_penetration,total_vehicles,simulation_steps,gasoline_co2_g,av_co2_g,total_co2_g,co2_reduction_rate_%,total_stops,monitored_edges,stops_per_vehicle,co2_per_vehicle_g
-2025-07-22 18:08:59,0.0,0,1270,0.0,0.0,0.0,0.0,313,24,0.0,0.0
+2025-07-23 15:26:19,0.0,0,1227,19309.11,0.0,19309.11,100.0,41,24,0.0,0.0
